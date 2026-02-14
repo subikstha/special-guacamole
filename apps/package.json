@@ -1,0 +1,6 @@
+{
+    "name": "three-classic-techniques-apps",
+    "private": true,
+    "packageManager": "pnpm@10.2.0",
+    "scripts": {}
+}

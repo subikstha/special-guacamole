@@ -1,0 +1,7 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+catalog:
+  three: ^0.182.0
+  vite-plugin-restart: ^2.0.0
