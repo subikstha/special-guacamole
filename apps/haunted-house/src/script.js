@@ -12,6 +12,8 @@ const gui = new GUI()
 // canvas
 const canvas = document.querySelector('canvas.webgl')
 
+
+
 // Scene
 const scene = new THREE.Scene()
 
@@ -22,6 +24,13 @@ const scene = new THREE.Scene()
 // Temporary Sphere
 const sphere = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 32), new THREE.MeshStandardMaterial({ roughness: 0.7 }))
 scene.add(sphere)
+
+// Floor
+const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(20, 20),
+    new THREE.MeshStandardMaterial()
+)
+scene.add(floor)
 
 /**
  * Lights
@@ -42,6 +51,10 @@ const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
 }
+
+// Axes Helper
+const axisHelper = new THREE.AxesHelper(sizes)
+scene.add(axisHelper)
 
 window.addEventListener('resize', () => {
     // Update sizes
