@@ -67,8 +67,26 @@ bushColorTexture.wrapS = THREE.RepeatWrapping
 bushARMTexture.wrapS = THREE.RepeatWrapping
 bushNormalTexture.wrapS = THREE.RepeatWrapping
 
+// Grave
+const graveColorTexture = textureLoader.load('./resources/grave/plastered_stone_wall_1k/plastered_stone_wall_diff_1k.jpg')
+const graveARMTexture = textureLoader.load('./resources/grave/plastered_stone_wall_1k/plastered_stone_wall_arm_1k.jpg')
+const graveNormalTexture = textureLoader.load('./resources/grave/plastered_stone_wall_1k/plastered_stone_wall_nor_gl_1k.jpg')
+
+graveColorTexture.colorSpace = THREE.SRGBColorSpace
+
+graveColorTexture.repeat.set(0.3, 0.4)
+graveARMTexture.repeat.set(0.3, 0.4)
+graveNormalTexture.repeat.set(0.3, 0.4)
+
 // Door
 const doorColorTexture = textureLoader.load('./resources/door/color.jpg')
+const doorAlphaTexture = textureLoader.load('./resources/door/alpha.jpg')
+const doorAmbientOcclusionTexture = textureLoader.load('./resources/door/ambientOcclusion.jpg')
+const doorHeightTexture = textureLoader.load('./resources/door/height.jpg')
+const doorNormalTexture = textureLoader.load('./resources/door/normal.jpg')
+const doorMetalnessTexture = textureLoader.load('./resources/door/metalness.jpg')
+const doorRoughnessTexture = textureLoader.load('./resources/door/roughness.jpg')
+
 doorColorTexture.colorSpace = THREE.SRGBColorSpace
 
 roofColorTexture.colorSpace = THREE.SRGBColorSpace
@@ -115,6 +133,7 @@ scene.add(house)
 const walls = new THREE.Mesh(
     new THREE.BoxGeometry(4, 2.5, 4),
     new THREE.MeshStandardMaterial({
+        // side: THREE.DoubleSide,
         map: wallColorTexture,
         aoMap: wallARMTexture,
         roughnessMap: wallARMTexture,
@@ -142,8 +161,19 @@ house.add(roof)
 
 // Doors
 const door = new THREE.Mesh(
-    new THREE.PlaneGeometry(2.2, 2.2),
-    new THREE.MeshStandardMaterial({ map: doorColorTexture })
+    new THREE.PlaneGeometry(2.2, 2.2, 100, 100),
+    new THREE.MeshStandardMaterial({
+        map: doorColorTexture,
+        transparent: true,
+        alphaMap: doorAlphaTexture,
+        aoMap: doorAmbientOcclusionTexture,
+        displacementMap: doorHeightTexture,
+        displacementScale: 0.15,
+        displacementBias: -0.04,
+        normalMap: doorNormalTexture,
+        metalnessMap: doorMetalnessTexture,
+        roughnessMap: doorRoughnessTexture
+    })
 )
 door.position.z += 2 + 0.01;  // add this to prevent z fighting
 door.position.y += 1;
@@ -183,7 +213,13 @@ house.add(bush1, bush2, bush3, bush4)
 
 // Graves
 const graveGeometry = new THREE.BoxGeometry(0.6, 0.8, 0.2)
-const graveMaterial = new THREE.MeshStandardMaterial()
+const graveMaterial = new THREE.MeshStandardMaterial({
+    map: graveColorTexture,
+    aoMap: graveARMTexture,
+    roughnessMap: graveARMTexture,
+    metalnessMap: graveARMTexture,
+    normalMap: graveNormalTexture
+})
 const graves = new THREE.Group()
 scene.add(graves)
 
@@ -204,14 +240,27 @@ for (let i = 0; i < 30; i++) {
  * Lights
  */
 // Ambient light
-const ambientLight = new THREE.AmbientLight('#ffffff', 0.5)
+const ambientLight = new THREE.AmbientLight('#86cdff', 0.275)
 scene.add(ambientLight)
 
 // Directional light
-const directionalLight = new THREE.DirectionalLight('#ffffff', 1.5)
+const directionalLight = new THREE.DirectionalLight('#86cdff', 1)
 directionalLight.position.set(3, 2, -8)
 scene.add(directionalLight)
 
+const doorLight = new THREE.PointLight('#ff7d46', 5)
+// doorLight.position.z += 2.2
+// doorLight.position.y += 2.5
+doorLight.position.set(0, 2.2, 2.5)
+house.add(doorLight)
+
+/**
+ * Ghosts
+ */
+const ghost1 = new THREE.PointLight('#8800ff', 6)
+const ghost2 = new THREE.PointLight('#ff0088', 6)
+const ghost3 = new THREE.PointLight('#ff0000', 6)
+scene.add(ghost1, ghost2, ghost3)
 /**
  * Sizes
  */
@@ -265,6 +314,50 @@ renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 /**
+ * Shadows
+ */
+renderer.shadowMap.enabled = true // We need this to say that this threejs project supports shadows
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
+// Cast and receive
+directionalLight.castShadow = true
+ghost1.castShadow = true
+ghost2.castShadow = true
+ghost3.castShadow = true
+
+walls.castShadow = true
+walls.receiveShadow = true
+roof.castShadow = true
+floor.receiveShadow = true
+
+for (const grave of graves.children) {
+    grave.castShadow = true
+    grave.receiveShadow = true
+}
+
+
+// Mappings
+directionalLight.shadow.mapSize.width = 256
+directionalLight.shadow.mapSize.height = 256
+directionalLight.shadow.camera.top = 8
+directionalLight.shadow.camera.right = 8
+directionalLight.shadow.camera.bottom = - 8
+directionalLight.shadow.camera.left = - 8
+directionalLight.shadow.camera.near = 1
+directionalLight.shadow.camera.far = 20
+
+ghost1.shadow.mapSize.width = 256
+ghost1.shadow.mapSize.height = 256
+ghost1.shadow.camera.far = 10
+
+ghost2.shadow.mapSize.width = 256
+ghost2.shadow.mapSize.height = 256
+ghost2.shadow.camera.far = 10
+
+ghost3.shadow.mapSize.width = 256
+ghost3.shadow.mapSize.height = 256
+ghost3.shadow.camera.far = 10
+/**
  * Animate
  */
 const timer = new THREE.Timer()
@@ -273,6 +366,21 @@ const tick = () => {
     // Timer
     timer.update()
     const elapsedTime = timer.getElapsed()
+
+    const ghost1Angle = elapsedTime * 0.5 // We multiply to slow down the ghost movement
+    ghost1.position.x = Math.cos(ghost1Angle) * 4
+    ghost1.position.z = Math.sin(ghost1Angle) * 4
+    ghost1.position.y = Math.sin(ghost1Angle) * Math.sin(ghost1Angle * 2.34) * Math.sin(ghost1Angle * 3.45)
+
+    const ghost2Angle = -elapsedTime * 0.38 // We multiply to slow down the ghost movement
+    ghost2.position.x = Math.cos(ghost2Angle) * 5
+    ghost2.position.z = Math.sin(ghost2Angle) * 5
+    ghost2.position.y = Math.sin(ghost2Angle) * Math.sin(ghost2Angle * 2.34) * Math.sin(ghost2Angle * 3.45)
+
+    const ghost3Angle = -elapsedTime * 0.23 // We multiply to slow down the ghost movement
+    ghost3.position.x = Math.cos(ghost3Angle) * 6
+    ghost3.position.z = Math.sin(ghost3Angle) * 6
+    ghost3.position.y = Math.sin(ghost3Angle) * Math.sin(ghost3Angle * 2.34) * Math.sin(ghost3Angle * 3.45)
 
     // Update controls
     controls.update()
