@@ -44,7 +44,7 @@ const generateGalaxy = () => {
 
     const colorInside = new THREE.Color(parameters.insideColor)
     const colorOutside = new THREE.Color(parameters.outsideColor)
-
+    satria
     for (let i = 0; i < parameters.count * 3; i++) {
         // Positions
         const i3 = i * 3;
