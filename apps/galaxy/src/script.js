@@ -7,6 +7,11 @@ import GUI from 'lil-gui'
  */
 // Debug
 const gui = new GUI()
+const debugObject = {}
+debugObject.createSphere = () => {
+    console.log('create a sphere')
+}
+gui.add(debugObject, 'createSphere')
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -44,7 +49,6 @@ const generateGalaxy = () => {
 
     const colorInside = new THREE.Color(parameters.insideColor)
     const colorOutside = new THREE.Color(parameters.outsideColor)
-    satria
     for (let i = 0; i < parameters.count * 3; i++) {
         // Positions
         const i3 = i * 3;
