@@ -17,6 +17,7 @@ debugObject.createBox = () => {
     createBox(Math.random(), Math.random(), Math.random(),
         { x: (Math.random() - 0.5) * 3, y: 3, z: (Math.random() - 0.5) * 3 });
 }
+
 gui.add(debugObject, 'createSphere')
 gui.add(debugObject, 'createBox')
 /**
@@ -270,6 +271,18 @@ const createSphere = (radius, position) => {
         body
     })
 }
+
+debugObject.reset = () => {
+    for (const object of objectsToUpdate) {
+        object.body.removeEventListener('collide', playHitSound)
+        world.remove(object.body)
+
+        scene.remove(object.mesh)
+    }
+    objectsToUpdate.splice(0, objectsToUpdate.length)
+}
+gui.add(debugObject, 'reset')
+
 
 const firstSphere = createSphere(0.5, {
     x: 0,
