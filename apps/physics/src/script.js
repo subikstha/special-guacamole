@@ -27,6 +27,14 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
+const hitSound = new Audio('/sounds/hit.mp3')
+const playHitSound = (collision) => {
+    const impactStrength = collision.contact.getImpactVelocityAlongNormal()
+    if (impactStrength > 1.5) {
+        hitSound.currentTime = 0
+        hitSound.play()
+    }
+}
 
 /**
  * Textures
@@ -224,6 +232,7 @@ const createBox = (width, height, depth, position) => {
         material: defaultMaterial
     })
     body.position.copy(position)
+    body.addEventListener('collide', playHitSound)
     world.addBody(body)
     objectsToUpdate.push({
         mesh,
@@ -252,6 +261,7 @@ const createSphere = (radius, position) => {
         material: defaultMaterial
     })
     body.position.copy(position)
+    // body.addEventListener('collide', playHit)
     world.addBody(body)
 
     // Save in objectsToUpdate
