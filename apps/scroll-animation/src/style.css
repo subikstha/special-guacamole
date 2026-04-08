@@ -1,17 +1,19 @@
-*
-{
+* {
     margin: 0;
     padding: 0;
 }
 
-html,
+html {
+    background-color: #1e1a20;
+}
+
+/* html,
 body
 {
     overflow: hidden;
-}
+} */
 
-.webgl
-{
+.webgl {
     position: fixed;
     top: 0;
     left: 0;
@@ -19,8 +21,7 @@ body
 }
 
 
-.section
-{
+.section {
     display: flex;
     align-items: center;
     height: 100vh;
@@ -33,7 +34,6 @@ body
     padding-right: 10%;
 }
 
-section:nth-child(odd)
-{
+section:nth-child(odd) {
     justify-content: flex-end;
 }

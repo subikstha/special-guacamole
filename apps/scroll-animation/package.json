@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "vite": "^6.2.2",
-    "vite-plugin-restart": "^catalog:"
+    "vite-plugin-restart": "catalog:"
   },
   "dependencies": {
     "lil-gui": "^0.20.0",
