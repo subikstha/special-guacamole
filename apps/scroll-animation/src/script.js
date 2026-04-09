@@ -60,6 +60,9 @@ mesh1.position.y = - objectsDistance * 0
 mesh2.position.y = - objectsDistance * 1
 mesh3.position.y = - objectsDistance * 2
 scene.add(mesh1, mesh2, mesh3)
+mesh1.position.x = 2;
+mesh2.position.x = -2;
+mesh3.position.x = 2
 
 const sectionMeshes = [mesh1, mesh2, mesh3]
 
@@ -126,7 +129,8 @@ const tick = () => {
     const elapsedTime = clock.getElapsedTime()
 
     // Animate camera
-    camera.position.y = - scrollY
+    camera.position.y = - scrollY / sizes.height * objectsDistance
+    // console.log('This is the scrollY and camera position', scrollY, camera.position.y)
 
     // Animate the meshes
     for (const mesh of sectionMeshes) {
